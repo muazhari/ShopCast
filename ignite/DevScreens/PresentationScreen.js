@@ -109,4 +109,4 @@ const stackNavigator = createStackNavigator({
   }
 })
 
-export default createAppContainer(stackNavigator);
+export default createAppContainer(stackNavigator)
