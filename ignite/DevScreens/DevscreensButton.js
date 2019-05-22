@@ -5,10 +5,10 @@ import RoundedButton from '../../App/Components/RoundedButton'
 import PresentationScreen from './PresentationScreen'
 
 export default class DevscreensButton extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
-      showModal: false
+      showModal: false,
     }
   }
 
@@ -16,22 +16,17 @@ export default class DevscreensButton extends React.Component {
     this.setState({ showModal: !this.state.showModal })
   }
 
-  render () {
+  render() {
     if (DebugConfig.showDevScreens) {
       return (
         <View>
-          <RoundedButton onPress={this.toggleModal}>
-            Open DevScreens
-          </RoundedButton>
-          <Modal
-            visible={this.state.showModal}
-            onRequestClose={this.toggleModal}>
+          <RoundedButton onPress={this.toggleModal}>Open DevScreens</RoundedButton>
+          <Modal visible={this.state.showModal} onRequestClose={this.toggleModal}>
             <PresentationScreen screenProps={{ toggle: this.toggleModal }} />
           </Modal>
         </View>
       )
-    } else {
-      return <View />
     }
+    return <View />
   }
 }
