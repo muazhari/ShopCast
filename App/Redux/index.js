@@ -9,10 +9,10 @@ const config = ReduxPersist.storeConfig
 /* ------------- Assemble The Reducers ------------- */
 export const reducers = persistCombineReducers(config, {
   nav: require('./NavigationRedux').reducer,
-  login: require('./LoginRedux').reducer,
+  auth: require('./AuthRedux').reducer,
   appState: require('./AppStateRedux').reducer,
-  github: require('./GithubRedux').reducer,
-  search: require('./SearchRedux').reducer,
+  // github: require('./GithubRedux').reducer,
+  // search: require('./SearchRedux').reducer,
 })
 
 export default () => {

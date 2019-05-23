@@ -4,37 +4,38 @@ import Immutable from 'seamless-immutable'
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-  signinRequest: ['username', 'password'],
-  signinSuccess: ['username'],
-  signinFailure: ['error'],
-  signupRequest: ['username', 'password'],
-  signupSuccess: ['username'],
-  signupFailure: ['error'],
-  logout: null,
-  autoSignIn: null,
+  loginRequest: ['username', 'password'],
+  loginSuccess: ['credential'],
+  loginFailure: ['error'],
+  registerRequest: ['username', 'password'],
+  registerSuccess: ['username'],
+  registerFailure: ['error'],
+  logout: ['error'],
+  handleLogout: null,
+  autoLogin: ['credential'],
 })
 
-export const AuthTypes = Types
+export const LoginTypes = Types
 export default Creators
 
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
-  username: null,
+  credential: null,
   error: null,
   fetching: false,
 })
 
 /* ------------- Reducers ------------- */
 
-// we're attempting to signin
+// we're attempting to login
 export const request = state => {
   return { ...state, fetching: true }
 }
 
 // we've successfully logged in
-export const success = (state, { username }) => {
-  return { ...state, fetching: false, error: null, username }
+export const success = (state, { credential }) => {
+  return { ...state, fetching: false, error: null, credential }
 }
 
 // we've had a problem logging in
@@ -43,27 +44,38 @@ export const failure = (state, { error }) => {
 }
 
 // we've logged out
-export const logout = state => INITIAL_STATE
+export const logout = (state, { error }) => {
+  if (!error) {
+    return INITIAL_STATE
+  }
+  const newState = INITIAL_STATE
+  return { ...newState, error }
+}
 
-// startup saga invoked autoSignIn
-export const autoSignIn = state => state
+export const handleLogout = state => INITIAL_STATE
+
+// startup saga invoked autoLogin
+export const autoLogin = (state, { credential }) => {
+  return { ...state, credential }
+}
 
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
-  [Types.SIGNIN_REQUEST]: request,
-  [Types.SIGNIN_SUCCESS]: success,
-  [Types.SIGNIN_FAILURE]: failure,
-  [Types.SIGNUP_REQUEST]: request,
-  [Types.SIGNUP_SUCCESS]: success,
-  [Types.SIGNUP_FAILURE]: failure,
+  [Types.LOGIN_REQUEST]: request,
+  [Types.LOGIN_SUCCESS]: success,
+  [Types.LOGIN_FAILURE]: failure,
+  [Types.REGISTER_REQUEST]: request,
+  [Types.REGISTER_SUCCESS]: success,
+  [Types.REGISTER_FAILURE]: failure,
   [Types.LOGOUT]: logout,
-  [Types.AUTO_SIGNIN]: autoSignIn,
+  [Types.HANDLE_LOGOUT]: handleLogout,
+  [Types.AUTO_LOGIN]: autoLogin,
 })
 
 /* ------------- Selectors ------------- */
 
-// Is the current user logged in?
-export const isLoggedIn = authState => authState.username !== null
-
-export const selectLoggedInStatus = state => isLoggedIn(state.auth)
+export const AuthSelectors = {
+  // Is the current user logged in?
+  selectIsLoggedIn: state => state.credential !== null,
+}

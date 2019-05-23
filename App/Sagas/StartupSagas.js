@@ -1,13 +1,27 @@
-import { put, select } from 'redux-saga/effects'
+import { put, select, take, call } from 'redux-saga/effects'
+import { eventChannel } from 'redux-saga'
 import { is } from 'ramda'
 import firebase from 'firebase'
-import GithubActions, { GithubSelectors } from '../Redux/GithubRedux'
+import { AsyncStorage } from 'react-native'
 
-import LoggedInActions, { isLoggedIn, selectLoggedInStatus } from '../Redux/LoginRedux'
+// import GithubActions, { GithubSelectors } from '../Redux/GithubRedux'
+
+import LoggedInActions, { selectLoggedInStatus } from '../Redux/AuthRedux'
 import AppStateActions from '../Redux/AppStateRedux'
 
 // exported to make available for tests
-export const { selectAvatar } = GithubSelectors
+// export const { selectAvatar } = GithubSelectors
+export const selectAvatar = null
+
+function getAuthChannel() {
+  if (!this.authChannel) {
+    this.authChannel = eventChannel(emit => {
+      const unsubscribe = firebase.auth().onAuthStateChanged(user => emit({ user }))
+      return unsubscribe
+    })
+  }
+  return this.authChannel
+}
 
 // process STARTUP actions
 export function* startup(action) {
@@ -35,25 +49,37 @@ export function* startup(action) {
         someNormalFunction: selectAvatar,
       },
     })
-  }
-  const avatar = yield select(selectAvatar)
 
-  // only get if we don't have it yet
-  if (!is(String, avatar)) {
-    yield put(GithubActions.userRequest('muazhari'))
+    console.tron.onCustomCommand('Clear Redux-Persist AsyncStorage', async (payload: string) => {
+      await AsyncStorage.clear()
+      console.tron.log('async storage cleared.')
+    })
   }
+  // const avatar = yield select(selectAvatar)
+  //
+  // only get if we don't have it yet
+  // if (!is(String, avatar)) {
+  //   yield put(GithubActions.userRequest('muazhari'))
+  // }
 
   try {
-    const Fire = require('../Config/FireBaseConfig')
-    yield put(AppStateActions.setRehydrationComplete())
-    console.tron.log('Firebase connected. ✨')
+    require('../Config/FireBaseConfig')
+    console.tron.log('✨ Firebase connected. ✨')
+    const channel = yield call(getAuthChannel)
+    const result = yield take(channel)
+
+    if (result.user) {
+      yield put(LoggedInActions.autoLogin({ credential: result }))
+    } else {
+      yield put(AppStateActions.setRehydrationComplete())
+    }
   } catch (error) {
     console.tron.log(`Firebase error. ${{ error }}`)
     yield put(AppStateActions.setRehydrationStatus(error))
   }
 
-  const isLoggedIn = yield select(selectLoggedInStatus)
-  if (isLoggedIn) {
-    yield put(LoggedInActions.autoLogin())
-  }
+  // const isLoggedIn = yield select(selectLoggedInStatus)
+  // if (isLoggedIn) {
+  //   yield put(LoggedInActions.autoLogin())
+  // }
 }

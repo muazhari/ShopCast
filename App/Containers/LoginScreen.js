@@ -8,13 +8,15 @@ import {
   Image,
   Keyboard,
   LayoutAnimation,
-  Button,
+  // Button,
 } from 'react-native'
+
+import { Button } from 'react-native-elements'
 import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
 import styles from './Styles/LoginScreenStyles'
 import { Images, Metrics } from '../Themes'
-import LoginActions from '../Redux/LoginRedux'
+import AuthActions from '../Redux/AuthRedux'
 
 class LoginScreen extends React.Component {
   // static propTypes = {
@@ -32,8 +34,8 @@ class LoginScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      username: 'reactnative@infinite.red',
-      password: 'password',
+      username: 'kharisma.azhari02@gmail.com',
+      password: '123456',
       visibleHeight: Metrics.screenHeight,
       topLogo: { width: Metrics.screenWidth },
     }
@@ -46,6 +48,10 @@ class LoginScreen extends React.Component {
     if (this.isAttempting && !newProps.fetching) {
       this.props.navigation.goBack()
     }
+  }
+
+  componentDidMount() {
+    //
   }
 
   componentWillMount() {
@@ -86,6 +92,13 @@ class LoginScreen extends React.Component {
     this.props.attemptLogin(username, password)
   }
 
+  handlePressRegister = () => {
+    const { username, password } = this.state
+    this.isAttempting = true
+    // attempt a login - a saga is listening to pick it up from here.
+    this.props.attemptRegister(username, password)
+  }
+
   handleChangeUsername = text => {
     this.setState({ username: text })
   }
@@ -104,11 +117,30 @@ class LoginScreen extends React.Component {
         contentContainerStyle={{ justifyContent: 'center' }}
         style={[styles.container, { height: this.state.visibleHeight }]}
         keyboardShouldPersistTaps="always">
-        <Modal isVisible={error}>
-          <View style={{ flex: 1 }}>
-            {error && <Text>{error.message}</Text>}
+        <Modal
+          animationIn="fadeInUp"
+          animationOut="fadeOutDown"
+          isVisible={error}
+          style={{
+            backgroundColor: 'white',
+            marginHorizontal: Metrics.screenWidth * 0.1,
+            marginVertical: Metrics.screenHeight * 0.33,
+            borderRadius: 15,
+          }}>
+          <View style={{}}>
+            <Text
+              style={{
+                textAlign: 'center',
+                marginHorizontal: Metrics.screenWidth * 0.1,
+                marginBottom: Metrics.screenHeight * 0.03,
+              }}>
+              {error && error.message}
+            </Text>
             <Button
-              title="Authenticator"
+              raised
+              buttonStyle={{ borderRadius: 10 }}
+              containerStyle={{ marginHorizontal: Metrics.screenWidth * 0.1 }}
+              title="OK"
               onPress={() => {
                 this.props.attemptFailure(null)
               }}
@@ -166,9 +198,10 @@ class LoginScreen extends React.Component {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.loginButtonWrapper}
-              onPress={() => this.props.navigation.goBack()}>
+              // onPress={() => this.props.navigation.goBack()}>
+              onPress={this.handlePressRegister}>
               <View style={styles.loginButton}>
-                <Text style={styles.loginText}>Cancel</Text>
+                <Text style={styles.loginText}>Sin Up</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -180,16 +213,19 @@ class LoginScreen extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    fetching: state.login.fetching,
-    error: state.login.error,
+    fetching: state.auth.fetching,
+    error: state.auth.error,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    attemptLogin: (username, password) => dispatch(LoginActions.loginRequest(username, password)),
+    attemptLogin: (username, password) => dispatch(AuthActions.loginRequest(username, password)),
 
-    attemptFailure: error => dispatch(LoginActions.loginFailure(error)),
+    attemptRegister: (username, password) =>
+      dispatch(AuthActions.registerRequest(username, password)),
+
+    attemptFailure: error => dispatch(AuthActions.loginFailure(error)),
   }
 }
 

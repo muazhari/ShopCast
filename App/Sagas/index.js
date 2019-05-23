@@ -1,4 +1,4 @@
-import { takeLatest, all } from 'redux-saga/effects'
+import { takeLatest, takeEvery, all } from 'redux-saga/effects'
 import API from '../Services/Api'
 import FixtureAPI from '../Services/FixtureApi'
 import DebugConfig from '../Config/DebugConfig'
@@ -6,23 +6,24 @@ import DebugConfig from '../Config/DebugConfig'
 /* ------------- Types ------------- */
 
 import { StartupTypes } from '../Redux/StartupRedux'
-import { GithubTypes } from '../Redux/GithubRedux'
+// import { GithubTypes } from '../Redux/GithubRedux'
 // import { AuthTypes } from '../Redux/AuthRedux'
-import { LoginTypes } from '../Redux/LoginRedux'
+import { LoginTypes } from '../Redux/AuthRedux'
 
 /* ------------- Sagas ------------- */
 
 import { startup } from './StartupSagas'
-import { getUserAvatar } from './GithubSagas'
+// import { getUserAvatar } from './GithubSagas'
 // import { getSignIn } from './SignInSagas'
-// import { getSignUp } from './SignUpSagas'
-import { login } from './LoginSagas'
+import { getLogin } from './LoginSagas'
+import { getRegister } from './RegisterSagas'
+import { getLogout } from './LogoutSagas'
 
 /* ------------- API ------------- */
 
 // The API we use is only used from Sagas, so we create it here and pass along
 // to the sagas which need it.
-const api = DebugConfig.useFixtures ? FixtureAPI : API.createGitHub()
+// const api = DebugConfig.useFixtures ? FixtureAPI : API.createGitHub()
 
 /* ------------- Connect Types To Sagas ------------- */
 
@@ -30,11 +31,14 @@ export default function* root() {
   yield all([
     // some sagas only receive an action
     takeLatest(StartupTypes.STARTUP, startup),
-    takeLatest(LoginTypes.LOGIN_REQUEST, login),
-    // takeLatest(AuthTypes.SIGNIN_REQUEST, getSignIn),
-    // takeLatest(AuthTypes.SIGNUP_REQUEST, getSignUp),
+    takeLatest(LoginTypes.LOGIN_REQUEST, getLogin),
+    takeLatest(LoginTypes.REGISTER_REQUEST, getRegister),
+    takeLatest(LoginTypes.HANDLE_LOGOUT, getLogout),
+    // takeLatest(ac => ac.type === 'LOGOUT' && Object.keys(ac).length === 1, getLogout),
+    // takeLatest(AuthTypes.LOGIN_REQUEST, getSignIn),
+    // takeLatest(AuthTypes.REGISTER_REQUEST, getSignUp),
 
     // some sagas receive extra parameters in addition to an action
-    takeLatest(GithubTypes.USER_REQUEST, getUserAvatar, api),
+    // takeLatest(GithubTypes.USER_REQUEST, getUserAvatar, api),
   ])
 }
