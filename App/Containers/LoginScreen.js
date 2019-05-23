@@ -132,7 +132,7 @@ class LoginScreen extends React.Component {
               style={{
                 textAlign: 'center',
                 marginHorizontal: Metrics.screenWidth * 0.1,
-                marginBottom: Metrics.screenHeight * 0.03,
+                marginBottom: Metrics.screenHeight * 0.09,
               }}>
               {error && error.message}
             </Text>
@@ -150,7 +150,7 @@ class LoginScreen extends React.Component {
         <Image source={Images.logo} style={[styles.topLogo, this.state.topLogo]} />
         <View style={styles.form}>
           <View style={styles.row}>
-            <Text style={styles.rowLabel}>Username</Text>
+            <Text style={styles.rowLabel}>Username / Email</Text>
             <TextInput
               ref={ref => {
                 this.username = ref
@@ -191,19 +191,22 @@ class LoginScreen extends React.Component {
           </View>
 
           <View style={[styles.loginRow]}>
-            <TouchableOpacity style={styles.loginButtonWrapper} onPress={this.handlePressLogin}>
-              <View style={styles.loginButton}>
-                <Text style={styles.loginText}>Sign In</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.loginButtonWrapper}
-              // onPress={() => this.props.navigation.goBack()}>
-              onPress={this.handlePressRegister}>
-              <View style={styles.loginButton}>
-                <Text style={styles.loginText}>Sin Up</Text>
-              </View>
-            </TouchableOpacity>
+            <Button
+              disabled={!editable}
+              containerStyle={styles.loginButtonWrapper}
+              buttonStyle={styles.loginButton}
+              titleStyle={styles.loginText}
+              onPress={this.handlePressLogin}
+              title="Sign In"
+            />
+            <Button
+              disabled={!editable}
+              containerStyle={styles.loginButtonWrapper}
+              buttonStyle={styles.loginButton}
+              titleStyle={styles.loginText}
+              onPress={this.handlePressRegister}
+              title="Sign Up"
+            />
           </View>
         </View>
       </ScrollView>

@@ -13,7 +13,7 @@ export function* getLogin({ username, password }) {
       const result = yield call([auth, auth.signInWithEmailAndPassword], username, password)
       yield put(AuthActions.loginSuccess(result.user))
 
-      console.tron.log(`Firebase signin success. ${result.email}`)
+      console.tron.log(`Firebase signin success. ${result.user.email}`)
     } catch (err) {
       const error = { code: err.code, message: err.message }
       yield put(AuthActions.loginFailure(error))
