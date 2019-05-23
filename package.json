@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "apisauce": "^1.0.2",
+    "firebase": "^6.0.2",
     "format-json": "^1.0.3",
     "identity-obj-proxy": "^3.0.0",
     "lodash": "^4.17.11",
@@ -36,16 +37,19 @@
     "react-native-animatable": "^1.3.2",
     "react-native-config": "^0.11.7",
     "react-native-device-info": "1.6.1",
+    "react-native-firebase": "^5.3.1",
     "react-native-gesture-handler": "1.0.9",
     "react-native-i18n": "2.0.14",
+    "react-native-modal": "^11.0.1",
     "react-native-vector-icons": "6.1.0",
     "react-navigation": "3.0.0",
     "react-navigation-redux-helpers": "^2.0.6",
     "react-redux": "^6.0.0",
     "redux": "^4.0.0",
+    "redux-persist": "5.10.0",
     "redux-saga": "^1.0.0",
     "reduxsauce": "1.0.1",
-    "seamless-immutable": "^7.1.2"
+    "seamless-immutable": "^7.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
@@ -76,7 +80,9 @@
     "ignite-andross": "^4.0.5",
     "ignite-animatable": "1.0.2",
     "ignite-dev-screens": "2.4.5",
+    "ignite-firebase": "^0.0.4",
     "ignite-i18n": "1.2.0",
+    "ignite-redux-persist": "^1.1.2",
     "ignite-standard": "1.0.0",
     "ignite-vector-icons": "1.1.1",
     "jest": "^24.8.0",

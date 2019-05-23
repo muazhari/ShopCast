@@ -1,6 +1,10 @@
 import { put, select } from 'redux-saga/effects'
 import { is } from 'ramda'
+import firebase from 'firebase'
 import GithubActions, { GithubSelectors } from '../Redux/GithubRedux'
+
+import LoggedInActions, { isLoggedIn, selectLoggedInStatus } from '../Redux/LoginRedux'
+import AppStateActions from '../Redux/AppStateRedux'
 
 // exported to make available for tests
 export const { selectAvatar } = GithubSelectors
@@ -33,8 +37,23 @@ export function* startup(action) {
     })
   }
   const avatar = yield select(selectAvatar)
+
   // only get if we don't have it yet
   if (!is(String, avatar)) {
-    yield put(GithubActions.userRequest('GantMan'))
+    yield put(GithubActions.userRequest('muazhari'))
+  }
+
+  try {
+    const Fire = require('../Config/FireBaseConfig')
+    yield put(AppStateActions.setRehydrationComplete())
+    console.tron.log('Firebase connected. ✨')
+  } catch (error) {
+    console.tron.log(`Firebase error. ${{ error }}`)
+    yield put(AppStateActions.setRehydrationStatus(error))
+  }
+
+  const isLoggedIn = yield select(selectLoggedInStatus)
+  if (isLoggedIn) {
+    yield put(LoggedInActions.autoLogin())
   }
 }

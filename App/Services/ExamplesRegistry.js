@@ -3,14 +3,19 @@ import { Text, View } from 'react-native'
 import R from 'ramda'
 import { ApplicationStyles } from '../Themes'
 import DebugConfig from '../Config/DebugConfig'
-let globalComponentExamplesRegistry = []
-let globalPluginExamplesRegistry = []
 
-export const addComponentExample = (title, usage = () => {}) => { if (DebugConfig.includeExamples) globalComponentExamplesRegistry.push({title, usage}) } // eslint-disable-line
+const globalComponentExamplesRegistry = []
+const globalPluginExamplesRegistry = []
 
-export const addPluginExample = (title, usage = () => {}) => { if (DebugConfig.includeExamples) globalPluginExamplesRegistry.push({title, usage}) } // eslint-disable-line
+export const addComponentExample = (title, usage = () => {}) => {
+  if (DebugConfig.includeExamples) globalComponentExamplesRegistry.push({ title, usage })
+} // eslint-disable-line
 
-const renderComponentExample = (example) => {
+export const addPluginExample = (title, usage = () => {}) => {
+  if (DebugConfig.includeExamples) globalPluginExamplesRegistry.push({ title, usage })
+} // eslint-disable-line
+
+const renderComponentExample = example => {
   return (
     <View key={example.title}>
       <View style={ApplicationStyles.darkLabelContainer}>
@@ -21,7 +26,7 @@ const renderComponentExample = (example) => {
   )
 }
 
-const renderPluginExample = (example) => {
+const renderPluginExample = example => {
   return (
     <View key={example.title}>
       <View style={ApplicationStyles.darkLabelContainer}>
@@ -32,7 +37,8 @@ const renderPluginExample = (example) => {
   )
 }
 
-export const renderComponentExamples = () => R.map(renderComponentExample, globalComponentExamplesRegistry)
+export const renderComponentExamples = () =>
+  R.map(renderComponentExample, globalComponentExamplesRegistry)
 
 export const renderPluginExamples = () => R.map(renderPluginExample, globalPluginExamplesRegistry)
 
@@ -41,5 +47,5 @@ export default {
   renderComponentExamples,
   addComponentExample,
   renderPluginExamples,
-  addPluginExample
+  addPluginExample,
 }
