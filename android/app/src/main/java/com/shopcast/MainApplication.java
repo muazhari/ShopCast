@@ -3,6 +3,9 @@ package com.shopcast;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import cn.nodemedia.react_native_nodemediaclient.NodeMediaReactPackage;
+import io.invertase.firebase.RNFirebasePackage;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -27,6 +30,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new NodeMediaReactPackage(),
+            new RNFirebasePackage(),
+            new ReactNativeConfigPackage(),
             new RNDeviceInfo(),
             new RNI18nPackage(),
             new VectorIconsPackage(),

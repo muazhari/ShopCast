@@ -138,6 +138,9 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-nodemediaclient')
+    implementation project(':react-native-firebase')
+    implementation project(':react-native-config')
     implementation project(':react-native-device-info')
     implementation project(':react-native-i18n')
     implementation project(':react-native-vector-icons')

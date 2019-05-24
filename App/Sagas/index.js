@@ -1,13 +1,9 @@
 import { takeLatest, takeEvery, all } from 'redux-saga/effects'
 import API from '../Services/Api'
-import FixtureAPI from '../Services/FixtureApi'
-import DebugConfig from '../Config/DebugConfig'
 
 /* ------------- Types ------------- */
 
 import { StartupTypes } from '../Redux/StartupRedux'
-// import { GithubTypes } from '../Redux/GithubRedux'
-// import { AuthTypes } from '../Redux/AuthRedux'
 import { LoginTypes } from '../Redux/AuthRedux'
 
 /* ------------- Sagas ------------- */
@@ -35,10 +31,7 @@ export default function* root() {
     takeLatest(LoginTypes.REGISTER_REQUEST, getRegister),
     takeLatest(LoginTypes.HANDLE_LOGOUT, getLogout),
     // takeLatest(ac => ac.type === 'LOGOUT' && Object.keys(ac).length === 1, getLogout),
-    // takeLatest(AuthTypes.LOGIN_REQUEST, getSignIn),
-    // takeLatest(AuthTypes.REGISTER_REQUEST, getSignUp),
 
     // some sagas receive extra parameters in addition to an action
-    // takeLatest(GithubTypes.USER_REQUEST, getUserAvatar, api),
   ])
 }

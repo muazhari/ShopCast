@@ -9,6 +9,8 @@ import { AsyncStorage } from 'react-native'
 import LoggedInActions, { selectLoggedInStatus } from '../Redux/AuthRedux'
 import AppStateActions from '../Redux/AppStateRedux'
 
+import Utils from '../Config/Utils'
+
 // exported to make available for tests
 // export const { selectAvatar } = GithubSelectors
 export const selectAvatar = null
@@ -70,6 +72,9 @@ export function* startup(action) {
 
     if (result.user) {
       yield put(LoggedInActions.autoLogin({ credential: result }))
+      Utils.setUserId(result.user.email)
+
+      console.tron.log(`✨${Utils.getUserId()}. ✨`)
     } else {
       yield put(AppStateActions.setRehydrationComplete())
     }
