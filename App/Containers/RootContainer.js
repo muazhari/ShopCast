@@ -9,17 +9,6 @@ import ReduxPersist from '../Config/ReduxPersist'
 // Styles
 import styles from './Styles/RootContainerStyles'
 
-import SocketUtils from '../Services/SocketUtils'
-
-SocketUtils.connect()
-SocketUtils.handleOnConnect()
-SocketUtils.handleOnClientJoin()
-SocketUtils.handleOnSendHeart()
-SocketUtils.handleOnSendMessage()
-SocketUtils.handleOnLeaveClient()
-SocketUtils.handleOnChangedLiveStatus()
-SocketUtils.handleOnNotReady()
-
 class RootContainer extends Component {
   componentDidMount() {
     // if redux persist is not active fire startup action

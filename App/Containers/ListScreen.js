@@ -52,14 +52,14 @@ class ListScreen extends React.Component {
             title="View User1 Live Stream"
             onPress={() => {
               Utils.setUserType('VIEWER')
-              Utils.setRoomName('user1')
+              Utils.setRoomName('kharisma.azhari02@gmail.com')
               this.props.navigation.navigate('LiveStreamScreen')
             }}
           />
 
           <TouchableOpacity
             style={styles.buttonPlay}
-            onPress={() => this.onReplayButtonClicked('user1')}>
+            onPress={() => this.onReplayButtonClicked('kharisma.azhari02@gmail.com')}>
             <Image source={require('../Images/assets/ico_play.png')} style={styles.iconPlay} />
           </TouchableOpacity>
         </View>
@@ -72,13 +72,13 @@ class ListScreen extends React.Component {
             title="View User2 Live Stream"
             onPress={() => {
               Utils.setUserType('VIEWER')
-              Utils.setRoomName('user2')
+              Utils.setRoomName('kharisma.azhari021@gmail.com')
               this.props.navigation.navigate('LiveStreamScreen')
             }}
           />
           <TouchableOpacity
             style={styles.buttonPlay}
-            onPress={() => this.onReplayButtonClicked('user2')}>
+            onPress={() => this.onReplayButtonClicked('kharisma.azhari021@gmail.com')}>
             <Image source={require('../Images/assets/ico_play.png')} style={styles.iconPlay} />
           </TouchableOpacity>
         </View>

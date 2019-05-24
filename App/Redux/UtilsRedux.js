@@ -1,7 +1,7 @@
-let userType = null
-let container = null
-let userId = null
-let roomName = null
+const userType = null
+const container = null
+const userId = null
+const roomName = null
 let timeOutMessages = []
 
 // const socketIOIP = 'http://103.221.221.111:3333';
@@ -10,10 +10,10 @@ const socketIOIP = 'http://192.168.43.208:3333'
 const rtmpPath = 'rtmp://192.168.43.208/live/'
 
 const getSocketIOIP = () => {
-  return socketIOIP
+  return this.socketIOIP
 }
 const getRtmpPath = () => {
-  return rtmpPath
+  return this.rtmpPath
 }
 
 const clearTimeOutMessages = () => {
@@ -32,35 +32,35 @@ const isNullOrUndefined = value => {
 }
 
 const getContainer = () => {
-  return container
+  return this.container
 }
 
 const setContainer = con => {
-  container = con
+  this.container = con
 }
 
 const setUserType = type => {
-  userType = type
+  this.userType = type
 }
 
 const getUserType = () => {
-  return userType
+  return this.userType
 }
 
 const setUserId = id => {
-  userId = id
+  this.userId = id
 }
 
 const getUserId = () => {
-  return userId
+  return this.userId
 }
 
 const setRoomName = name => {
-  roomName = name
+  this.roomName = name
 }
 
 const getRoomName = () => {
-  return roomName
+  return this.roomName
 }
 
 const Utils = {

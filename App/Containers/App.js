@@ -5,6 +5,17 @@ import DebugConfig from '../Config/DebugConfig'
 import RootContainer from './RootContainer'
 import createStore from '../Redux'
 
+import SocketUtils from '../Services/SocketUtils'
+
+SocketUtils.connect()
+SocketUtils.handleOnConnect()
+SocketUtils.handleOnClientJoin()
+SocketUtils.handleOnSendHeart()
+SocketUtils.handleOnSendMessage()
+SocketUtils.handleOnLeaveClient()
+SocketUtils.handleOnChangedLiveStatus()
+SocketUtils.handleOnNotReady()
+
 // create our store
 const store = createStore()
 
@@ -18,7 +29,7 @@ const store = createStore()
  * We separate like this to play nice with React Native's hot reloading.
  */
 class App extends Component {
-  render () {
+  render() {
     return (
       <Provider store={store}>
         <RootContainer />

@@ -1,4 +1,4 @@
-import { put, call } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 import firebase from 'firebase'
 import AuthActions from '../Redux/AuthRedux'
 
@@ -11,7 +11,7 @@ export function* getRegister({ username, password }) {
     try {
       const auth = firebase.auth()
       const result = yield call([auth, auth.createUserWithEmailAndPassword], username, password)
-      yield put(AuthActions.egisterSuccess(username))
+      yield put(AuthActions.registerSuccess(result.user))
 
       console.tron.log(`Firebase signup success. ${result.email}`)
     } catch (err) {

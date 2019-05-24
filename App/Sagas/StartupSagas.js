@@ -71,10 +71,7 @@ export function* startup(action) {
     const result = yield take(channel)
 
     if (result.user) {
-      yield put(LoggedInActions.autoLogin({ credential: result }))
-      Utils.setUserId(result.user.email)
-
-      console.tron.log(`✨${Utils.getUserId()}. ✨`)
+      yield put(LoggedInActions.autoLogin(result.user))
     } else {
       yield put(AppStateActions.setRehydrationComplete())
     }

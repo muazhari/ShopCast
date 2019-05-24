@@ -1,4 +1,5 @@
 import { NavigationActions, StackActions } from 'react-navigation'
+import { createReducer, createActions } from 'reduxsauce'
 import AppNavigation from '../Navigation/AppNavigation'
 
 const { navigate } = NavigationActions
@@ -35,10 +36,14 @@ export const reducer = (state = INITIAL_STATE, action) => {
       return NOT_LOGGED_IN_STATE
     case 'LOGOUT':
       return NOT_LOGGED_IN_STATE
-    case 'LOGIN_SUCCESS':
+    case 'AUTH_SUCCESS':
       return LOGGED_IN_STATE
-    case 'AUTO_LOGIN':
-      return LOGGED_IN_STATE
+    // case 'LOGIN_SUCCESS':
+    //   return LOGGED_IN_STATE
+    // case 'REGISTER_SUCCESS':
+    //   return LOGGED_IN_STATE
+    // case 'AUTO_LOGIN':
+    //   return LOGGED_IN_STATE
     default:
       newState = getStateForAction(action, state)
   }

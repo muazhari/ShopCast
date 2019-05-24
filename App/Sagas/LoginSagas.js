@@ -1,8 +1,7 @@
-import { put, call } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 import firebase from 'firebase'
 import AuthActions from '../Redux/AuthRedux'
-
-import Utils from '../Config/Utils'
+// import { getAuthed } from './AuthedSagas'
 
 // attempts to signin
 export function* getLogin({ username, password }) {
@@ -14,8 +13,7 @@ export function* getLogin({ username, password }) {
       const auth = firebase.auth()
       const result = yield call([auth, auth.signInWithEmailAndPassword], username, password)
       yield put(AuthActions.loginSuccess(result.user))
-      Utils.setUserId(result.user.email)
-      console.tron.log(`✨${Utils.getUserId()}. ✨`)
+      // yield call(getAuthed)
 
       console.tron.log(`Firebase signin success. ${result.user.email}`)
     } catch (err) {

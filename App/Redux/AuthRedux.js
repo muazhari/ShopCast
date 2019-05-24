@@ -8,7 +8,7 @@ const { Types, Creators } = createActions({
   loginSuccess: ['credential'],
   loginFailure: ['error'],
   registerRequest: ['username', 'password'],
-  registerSuccess: ['username'],
+  registerSuccess: ['credential'],
   registerFailure: ['error'],
   logout: ['error'],
   handleLogout: null,
@@ -52,7 +52,7 @@ export const logout = (state, { error }) => {
   return { ...newState, error }
 }
 
-export const handleLogout = state => INITIAL_STATE
+export const handleLogout = state => state
 
 // startup saga invoked autoLogin
 export const autoLogin = (state, { credential }) => {
@@ -77,5 +77,6 @@ export const reducer = createReducer(INITIAL_STATE, {
 
 export const AuthSelectors = {
   // Is the current user logged in?
-  selectIsLoggedIn: state => state.credential !== null,
+  selectIsLoggedIn: state => state.auth.credential !== null,
+  selectGetCredential: state => state.auth.credential,
 }

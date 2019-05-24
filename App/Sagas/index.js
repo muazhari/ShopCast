@@ -9,11 +9,11 @@ import { LoginTypes } from '../Redux/AuthRedux'
 /* ------------- Sagas ------------- */
 
 import { startup } from './StartupSagas'
-// import { getUserAvatar } from './GithubSagas'
-// import { getSignIn } from './SignInSagas'
 import { getLogin } from './LoginSagas'
 import { getRegister } from './RegisterSagas'
 import { getLogout } from './LogoutSagas'
+
+import { getAuthed } from './AuthedSagas'
 
 /* ------------- API ------------- */
 
@@ -30,6 +30,10 @@ export default function* root() {
     takeLatest(LoginTypes.LOGIN_REQUEST, getLogin),
     takeLatest(LoginTypes.REGISTER_REQUEST, getRegister),
     takeLatest(LoginTypes.HANDLE_LOGOUT, getLogout),
+
+    takeLatest(LoginTypes.LOGIN_SUCCESS, getAuthed),
+    takeLatest(LoginTypes.REGISTER_SUCCESS, getAuthed),
+    takeLatest(LoginTypes.AUTO_LOGIN, getAuthed),
     // takeLatest(ac => ac.type === 'LOGOUT' && Object.keys(ac).length === 1, getLogout),
 
     // some sagas receive extra parameters in addition to an action
