@@ -2,6 +2,7 @@ import { call, put, select } from 'redux-saga/effects'
 import firebase from 'firebase'
 import AuthActions, { AuthSelectors } from '../Redux/AuthRedux'
 import Utils from '../Config/Utils'
+import SocketUtils from '../Services/SocketUtils'
 
 export const { selectIsLoggedIn } = AuthSelectors
 
@@ -9,20 +10,22 @@ export const { selectIsLoggedIn } = AuthSelectors
 export function* getLogout(action) {
   const isLoggedIn = yield select(selectIsLoggedIn)
 
-  if (isLoggedIn) {
-    try {
+  try {
+    if (isLoggedIn) {
       const auth = firebase.auth()
       yield call([auth, auth.signOut])
-      yield put(AuthActions.logout())
 
+      yield SocketUtils.emitClientDisconnect()
       Utils.setUserId(null)
 
-      console.tron.log('Firebase logout success.')
-    } catch (err) {
-      const error = { code: err.code, message: err.message }
-      // yield put(AuthActions.loginFailure(error))
+      yield put(AuthActions.logoutSuccess())
 
-      console.tron.log(`Firebase logout failed. ${error.message}`)
+      console.tron.log('Firebase logout success.')
     }
+  } catch (err) {
+    const error = { code: err.code, message: err.message }
+    yield put(AuthActions.loginFailure(error))
+
+    console.tron.log(`Firebase logout failed. ${error.message}`)
   }
 }

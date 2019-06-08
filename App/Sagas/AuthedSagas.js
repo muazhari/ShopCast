@@ -3,6 +3,7 @@ import firebase from 'firebase'
 import AuthActions, { AuthSelectors } from '../Redux/AuthRedux'
 
 import Utils from '../Config/Utils'
+// import SocketUtils from '../Services/SocketUtils'
 
 export const { selectIsLoggedIn, selectGetCredential } = AuthSelectors
 
@@ -12,9 +13,12 @@ export function* getAuthed(action) {
   const authCredential = yield select(selectGetCredential)
 
   try {
-    Utils.setUserId(authCredential.email)
-    yield put({ type: 'AUTH_SUCCESS' })
-    console.tron.log(`Utils.getUserId() ✨${Utils.getUserId()}. ✨`)
+    if (isLoggedIn) {
+      // Utils.setUserId(authCredential.email)
+      // SocketUtils.emitJoinLobby('mainLobby', authCredential.email)
+      yield put({ type: 'AUTH_SUCCESS' })
+      console.tron.log(`Utils.getUserId() ✨${Utils.getUserId()}. ✨`)
+    }
   } catch (err) {
     console.tron.log(`Utils.getUserId() failed. ${err.message}`)
   }

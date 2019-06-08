@@ -34,7 +34,7 @@ export const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case 'SET_REHYDRATION_COMPLETE':
       return NOT_LOGGED_IN_STATE
-    case 'LOGOUT':
+    case 'LOGOUT_SUCCESS':
       return NOT_LOGGED_IN_STATE
     case 'AUTH_SUCCESS':
       return LOGGED_IN_STATE

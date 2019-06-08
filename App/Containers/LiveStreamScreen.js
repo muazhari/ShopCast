@@ -20,6 +20,7 @@ import {
 } from 'react-native'
 import KeyboardAccessory from 'react-native-sticky-keyboard-accessory'
 import { NodeCameraView, NodePlayerView } from 'react-native-nodemediaclient'
+import { connect } from 'react-redux'
 import SocketUtils from '../Services/SocketUtils'
 import LiveStatus from '../Config/liveStatus'
 import Utils from '../Config/Utils'
@@ -27,12 +28,9 @@ import FloatingHearts from '../Components/FloatingHearts'
 import Draggable from '../Components/Draggable'
 import styles from './styles'
 
-const { width, height } = Dimensions.get('window')
-
-
-import { connect } from 'react-redux'
 import AuthActions from '../Redux/AuthRedux'
 
+const { width, height } = Dimensions.get('window')
 
 class LiveStreamScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -84,7 +82,7 @@ class LiveStreamScreen extends Component {
     this.keyboardHideListener = Keyboard.addListener(keyboardHideEvent, e => this.keyboardHide(e))
 
     //
-    Utils.setContainer(this)
+    Utils.setContainer('liveRoom', this)
     //
 
     const userType = Utils.getUserType()
@@ -94,10 +92,10 @@ class LiveStreamScreen extends Component {
         this.setState({ liveStatus: LiveStatus.REGISTER })
         await SocketUtils.emitRegisterLiveStream(Utils.getRoomName(), Utils.getUserId())
       } else if (userType === 'VIEWER') {
-        await SocketUtils.emitJoinServer(Utils.getRoomName(), Utils.getUserId())
+        await SocketUtils.emitRoomJoin(Utils.getRoomName(), Utils.getUserId())
         this.StartBackgroundColorAnimation()
       } else if (userType === 'REPLAY') {
-        await SocketUtils.emitReplay(Utils.getRoomName(), Utils.getUserId())
+        await SocketUtils.emitRoomLiveReplay(Utils.getRoomName(), Utils.getUserId())
       }
     } catch (err) {
       console.error(err.message)
@@ -109,7 +107,7 @@ class LiveStreamScreen extends Component {
       {
         text: 'Close',
         onPress: () => {
-          SocketUtils.emitLeaveServer(Utils.getRoomName(), Utils.getUserId())
+          SocketUtils.emitRoomLeave(Utils.getRoomName(), Utils.getUserId())
           this.props.navigation.goBack()
         },
       },
@@ -155,7 +153,7 @@ class LiveStreamScreen extends Component {
 
   onPressHeart = () => {
     this.setState({ countHeart: this.state.countHeart + 1 })
-    SocketUtils.emitSendHeart(Utils.getRoomName())
+    SocketUtils.emitRoomSendHeart(Utils.getRoomName())
   }
 
   onChangeMessageText = text => {
@@ -190,7 +188,7 @@ class LiveStreamScreen extends Component {
       })
 
       // broadcast chats to room.
-      SocketUtils.emitSendMessage(
+      SocketUtils.emitRoomSendMessage(
         Utils.getRoomName(),
         Utils.getUserId(),
         message,
@@ -213,7 +211,7 @@ class LiveStreamScreen extends Component {
       })
 
       // broadcast chats to room.
-      SocketUtils.emitSendMessage(Utils.getRoomName(), Utils.getUserId(), message)
+      SocketUtils.emitRoomSendMessage(Utils.getRoomName(), Utils.getUserId(), message)
     }
   }
 
@@ -230,14 +228,14 @@ class LiveStreamScreen extends Component {
     if (this.vbViewer !== null && this.vbViewer !== undefined) {
       this.vbViewer.stop()
     }
-    SocketUtils.emitLeaveServer(Utils.getRoomName(), Utils.getUserId())
+    SocketUtils.emitRoomLeave(Utils.getRoomName(), Utils.getUserId())
     this.props.navigation.goBack()
   }
 
   renderCancelViewerButton = () => {
     return (
       <TouchableOpacity style={styles.buttonCancel} onPress={this.onPressCancelViewer}>
-        <Image source={require('../Images/assets/ico_cancel.png')} style={styles.iconCancel} />
+        <Image source={require('../Assets/Images/live-room/ico_cancel.png')} style={styles.iconCancel} />
       </TouchableOpacity>
     )
   }
@@ -247,14 +245,14 @@ class LiveStreamScreen extends Component {
     if (this.vbReplay !== null && this.vbReplay !== undefined) {
       this.vbReplay.stop()
     }
-    SocketUtils.emitLeaveServer(Utils.getRoomName(), Utils.getUserId())
+    SocketUtils.emitRoomLeave(Utils.getRoomName(), Utils.getUserId())
     this.props.navigation.goBack()
   }
 
   renderCancelReplayButton = () => {
     return (
       <TouchableOpacity style={styles.buttonCancel} onPress={this.onPressCancelReplay}>
-        <Image source={require('../Images/assets/ico_cancel.png')} style={styles.iconCancel} />
+        <Image source={require('../Assets/Images/live-room/ico_cancel.png')} style={styles.iconCancel} />
       </TouchableOpacity>
     )
   }
@@ -278,7 +276,7 @@ class LiveStreamScreen extends Component {
             text: 'Sure',
             onPress: () => {
               SocketUtils.emitCancelLiveStream(Utils.getRoomName(), Utils.getUserId())
-              SocketUtils.emitLeaveServer(Utils.getRoomName(), Utils.getUserId())
+              SocketUtils.emitRoomLeave(Utils.getRoomName(), Utils.getUserId())
               this.props.navigation.goBack()
             },
           },
@@ -291,7 +289,7 @@ class LiveStreamScreen extends Component {
   renderCancelStreamerButton = () => {
     return (
       <TouchableOpacity style={styles.buttonCancel} onPress={this.onPressCancelStreamer}>
-        <Image source={require('../Images/assets/ico_cancel.png')} style={styles.iconCancel} />
+        <Image source={require('../Assets/Images/live-room/ico_cancel.png')} style={styles.iconCancel} />
       </TouchableOpacity>
     )
   }
@@ -412,13 +410,16 @@ class LiveStreamScreen extends Component {
                 style={styles.wrapIconSend}
                 onPress={this.onPressSend}
                 activeOpacity={0.6}>
-                <Image source={require('../Images/assets/ico_send.png')} style={styles.iconSend} />
+                <Image source={require('../Assets/Images/live-room/ico_send.png')} style={styles.iconSend} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.wrapIconHeart}
                 onPress={this.onPressHeart}
                 activeOpacity={0.6}>
-                <Image source={require('../Images/assets/ico_heart.png')} style={styles.iconHeart} />
+                <Image
+                  source={require('../Assets/Images/live-room/ico_heart.png')}
+                  style={styles.iconHeart}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -480,13 +481,16 @@ class LiveStreamScreen extends Component {
                 style={styles.wrapIconSend}
                 onPress={this.onPressSend}
                 activeOpacity={0.6}>
-                <Image source={require('../Images/assets/ico_send.png')} style={styles.iconSend} />
+                <Image source={require('../Assets/Images/live-room/ico_send.png')} style={styles.iconSend} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.wrapIconHeart}
                 onPress={this.onPressHeart}
                 activeOpacity={0.6}>
-                <Image source={require('../Images/assets/ico_heart.png')} style={styles.iconHeart} />
+                <Image
+                  source={require('../Assets/Images/live-room/ico_heart.png')}
+                  style={styles.iconHeart}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -517,7 +521,7 @@ class LiveStreamScreen extends Component {
                       <Image source={item.avatar} style={styles.iconAvatar} />
                     ) : (
                       <Image
-                        source={require('../Images/assets/ico_heart.png')}
+                        source={require('../Assets/Images/live-room/ico_heart.png')}
                         style={styles.iconAvatar}
                       />
                     )}
@@ -579,7 +583,7 @@ class LiveStreamScreen extends Component {
             {this.renderCancelStreamerButton()}
             {this.renderLiveText()}
             <View style={styles.wrapIconView}>
-              <Image source={require('../Images/assets/ico_view.png')} style={styles.iconView} />
+              <Image source={require('../Assets/Images/live-room/ico_view.png')} style={styles.iconView} />
               <View style={styles.wrapTextViewer}>
                 <Text style={styles.textViewer}>{countViewer}</Text>
               </View>
@@ -617,7 +621,10 @@ class LiveStreamScreen extends Component {
               justifyContent: 'center',
             }}>
             <TouchableOpacity style={styles.buttonCloseModal} onPress={this.onPressCloseModal}>
-              <Image source={require('../Images/assets/ico_cancel.png')} style={styles.iconCancel} />
+              <Image
+                source={require('../Assets/Images/live-room/ico_cancel.png')}
+                style={styles.iconCancel}
+              />
             </TouchableOpacity>
             <View style={styles.wrapWebview}>
               <WebView source={{ uri: this.state.productUrl }} />
@@ -663,7 +670,7 @@ class LiveStreamScreen extends Component {
               {this.renderCancelViewerButton()}
               {this.renderLiveText()}
               <View style={styles.wrapIconView}>
-                <Image source={require('../Images/assets/ico_view.png')} style={styles.iconView} />
+                <Image source={require('../Assets/Images/live-room/ico_view.png')} style={styles.iconView} />
                 <View style={styles.wrapTextViewer}>
                   <Text style={styles.textViewer}>{countViewer}</Text>
                 </View>
@@ -683,7 +690,7 @@ class LiveStreamScreen extends Component {
               {this.renderCancelViewerButton()}
               {this.renderLiveText()}
               <View style={styles.wrapIconView}>
-                <Image source={require('../Images/assets/ico_view.png')} style={styles.iconView} />
+                <Image source={require('../Assets/Images/live-room/ico_view.png')} style={styles.iconView} />
                 <View style={styles.wrapTextViewer}>
                   <Text style={styles.textViewer}>{countViewer}</Text>
                 </View>
@@ -708,7 +715,10 @@ class LiveStreamScreen extends Component {
               justifyContent: 'center',
             }}>
             <TouchableOpacity style={styles.buttonCloseModal} onPress={this.onPressCloseModal}>
-              <Image source={require('../Images/assets/ico_cancel.png')} style={styles.iconCancel} />
+              <Image
+                source={require('../Assets/Images/live-room/ico_cancel.png')}
+                style={styles.iconCancel}
+              />
             </TouchableOpacity>
             <View style={styles.wrapWebview}>
               <WebView source={{ uri: this.state.productUrl }} />
@@ -751,7 +761,7 @@ class LiveStreamScreen extends Component {
             {this.renderCancelReplayButton()}
             {this.renderLiveText()}
             <View style={styles.wrapIconView}>
-              <Image source={require('../Images/assets/ico_view.png')} style={styles.iconView} />
+              <Image source={require('../Assets/Images/live-room/ico_view.png')} style={styles.iconView} />
               <View style={styles.wrapTextViewer}>
                 <Text style={styles.textViewer}>{countViewer}</Text>
               </View>
@@ -774,7 +784,6 @@ class LiveStreamScreen extends Component {
     return this.renderReplayUI()
   }
 }
-
 
 const mapStateToProps = state => {
   return {

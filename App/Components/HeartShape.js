@@ -9,7 +9,7 @@ import { Image } from 'react-native';
 const HeartShape = ({ color }) => {
   return (
     <Image
-      source={require('../Images/assets/ico_heart.png')}
+      source={require('../Assets/Images/live-room/ico_heart.png')}
       style={{
         tintColor: color,
         width: 42,

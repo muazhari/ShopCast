@@ -1,8 +1,10 @@
 let userType = null
-let container = null
+
 let userId = null
 let roomName = null
 let timeOutMessages = []
+
+let container = {} // eslint-disable-line
 
 // const socketIOIP = 'http://103.221.221.111:3333';
 const socketIOIP = 'http://192.168.43.208:3333'
@@ -31,12 +33,12 @@ const isNullOrUndefined = value => {
   return value === null || value === undefined
 }
 
-const getContainer = () => {
-  return container
+const getContainer = containerName => {
+  return container[containerName]
 }
 
-const setContainer = con => {
-  container = con
+const setContainer = (containerName, con) => {
+  container[containerName] = con
 }
 
 const setUserType = type => {

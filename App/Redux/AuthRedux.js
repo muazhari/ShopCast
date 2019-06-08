@@ -10,8 +10,9 @@ const { Types, Creators } = createActions({
   registerRequest: ['username', 'password'],
   registerSuccess: ['credential'],
   registerFailure: ['error'],
-  logout: ['error'],
-  handleLogout: null,
+  logoutRequest: null,
+  logoutSuccess: null,
+  logoutFailure: ['error'],
   autoLogin: ['credential'],
 })
 
@@ -44,15 +45,9 @@ export const failure = (state, { error }) => {
 }
 
 // we've logged out
-export const logout = (state, { error }) => {
-  if (!error) {
-    return INITIAL_STATE
-  }
-  const newState = INITIAL_STATE
-  return { ...newState, error }
+export const logoutSuccess = (state = INITIAL_STATE) => {
+  return { ...state, fetching: false }
 }
-
-export const handleLogout = state => state
 
 // startup saga invoked autoLogin
 export const autoLogin = (state, { credential }) => {
@@ -65,11 +60,15 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.LOGIN_REQUEST]: request,
   [Types.LOGIN_SUCCESS]: success,
   [Types.LOGIN_FAILURE]: failure,
+  //--------------------------------------------------
   [Types.REGISTER_REQUEST]: request,
   [Types.REGISTER_SUCCESS]: success,
   [Types.REGISTER_FAILURE]: failure,
-  [Types.LOGOUT]: logout,
-  [Types.HANDLE_LOGOUT]: handleLogout,
+  //--------------------------------------------------
+  [Types.LOGOUT_REQUEST]: request,
+  [Types.LOGOUT_SUCCESS]: logoutSuccess,
+  [Types.LOGOUT_FAILURE]: failure,
+  //--------------------------------------------------
   [Types.AUTO_LOGIN]: autoLogin,
 })
 

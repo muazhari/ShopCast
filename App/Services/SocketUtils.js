@@ -16,8 +16,117 @@ const connect = () => {
 
 const handleOnConnect = () => {
   socket.on('connect', data => {
-    console.log('connect')
+    console.tron.log('connect')
   })
+}
+
+const emitClientDisconnect = () => {
+  socket.emit('disconnect', data => {
+    console.tron.log('by client disconnect')
+  })
+}
+
+const emitLobbyJoin = (lobbyName, userId) => {
+  socket.emit('lobby-pre-join', { lobbyName, userId }, data => {
+    if (data) {
+      const { countLobbers, liveRooms } = data
+      Utils.getContainer(lobbyName).setState({
+        liveRooms,
+        countLobbers,
+      })
+    }
+  })
+}
+
+const handleOnLobbyJoin = () => {
+  socket.on('lobby-post-join', data => {
+    if (data) {
+      const { lobbyName, liveRooms, countLobbers } = data
+      console.tron.log('lobby-post-join', data)
+
+      Utils.getContainer(lobbyName).setState({
+        liveRooms,
+        countLobbers,
+      })
+    }
+  })
+}
+
+const emitLobbyLeave = (lobbyName, userId) => {
+  socket.emit('lobby-pre-leave', {
+    lobbyName,
+    userId,
+  })
+}
+
+const handleOnLobbyLeave = () => {
+  socket.on('lobby-post-leave', data => {
+    if (data) {
+      // const { countLobbers, lobbyName } = data
+      // Utils.getContainer(lobbyName).setState({ countLobbers })
+    }
+  })
+  console.tron.log('lobby-post-leave')
+}
+
+const emitRoomJoin = (roomName, userId) => {
+  socket.emit(
+    'room-pre-join',
+    { roomName, userId },
+    // countViewer verified by server.
+    data => {
+      if (data) {
+        const { countViewer, liveStatus } = data
+        Utils.getContainer('liveRoom').setState({
+          countViewer,
+          liveStatus,
+        })
+      }
+    }
+  )
+  console.tron.log('room-pre-join')
+  // bug coating, didn't truly fixed, because of socket server emit is faster than countViewer client state, temporary solution is increment it manually, the rest is normalize by another socket, 'emit' from server and restated by 'on handler' client.
+  // Utils.getContainer('liveRoom').state.countViewer += 1;
+}
+
+// increment viewer in-client
+const handleOnRoomJoin = () => {
+  socket.on('room-post-join', data => {
+    if (data) {
+      const { countViewer } = data
+      Utils.getContainer('liveRoom').setState({ countViewer })
+    }
+  })
+  console.tron.log('room-post-join')
+}
+
+const emitRoomLeave = (roomName, userId) => {
+  socket.emit(
+    'room-pre-leave',
+    {
+      roomName,
+      userId,
+    },
+    data => {
+      if (data) {
+        const { lobbyName } = data
+        emitLobbyJoin(lobbyName, userId)
+      }
+    }
+  )
+
+  console.tron.log('room-pre-leave')
+}
+
+const handleOnRoomLeave = () => {
+  socket.on('room-post-leave', data => {
+    console.tron.log('room-post-leave')
+    if (data) {
+      const { countViewer } = data
+      Utils.getContainer('liveRoom').setState({ countViewer })
+    }
+  })
+  console.tron.log('room-post-leave')
 }
 
 const emitRegisterLiveStream = (roomName, userId) => {
@@ -25,32 +134,23 @@ const emitRegisterLiveStream = (roomName, userId) => {
     roomName,
     userId,
   })
+  console.tron.log('register-live-stream')
 }
 
 const emitBeginLiveStream = (roomName, userId) => {
-  socket.emit(
-    'begin-live-stream',
-    {
-      roomName,
-      userId,
-    },
-    () => {
-      console.log('register-live-stream')
-    }
-  )
+  socket.emit('begin-live-stream', {
+    roomName,
+    userId,
+  })
+  console.tron.log('begin-live-stream')
 }
 
 const emitFinishLiveStream = (roomName, userId) => {
-  socket.emit(
-    'finish-live-stream',
-    {
-      roomName,
-      userId,
-    },
-    () => {
-      console.log('register-live-stream')
-    }
-  )
+  socket.emit('finish-live-stream', {
+    roomName,
+    userId,
+  })
+  console.tron.log('finish-live-stream')
 }
 
 const emitCancelLiveStream = (roomName, userId) => {
@@ -58,69 +158,42 @@ const emitCancelLiveStream = (roomName, userId) => {
     roomName,
     userId,
   })
+  console.tron.log('cancel-live-stream')
 }
 
-const emitJoinServer = (roomName, userId) => {
-  socket.emit(
-    'join-server',
-    { roomName, userId },
-    // countViewer verified by server.
-    data => {
-      if (data) {
-        const { countViewer, liveStatus } = data
-        Utils.getContainer().setState({
-          countViewer,
-          liveStatus,
-        })
-      }
-    }
-  )
-  // bug coating, didn't truly fixed, because of socket server emit is faster than countViewer client state, temporary solution is increment it manually, the rest is normalize by another socket, 'emit' from server and restated by 'on handler' client.
-  // Utils.getContainer().state.countViewer += 1;
-}
-
-// increment viewer in-client
-const handleOnClientJoin = () => {
-  socket.on('join-client', data => {
-    console.log('join-client')
-    const { countViewer } = data
-    Utils.getContainer().setState({ countViewer })
-  })
-}
-
-const emitLeaveServer = (roomName, userId) => {
-  socket.emit('leave-server', {
-    roomName,
-    userId,
-  })
-}
-
-const handleOnLeaveClient = () => {
-  socket.on('leave-client', data => {
-    console.log('leave-client')
-    const { countViewer } = data
-    Utils.getContainer().setState({ countViewer })
-  })
-}
-
-const handleOnSendHeart = () => {
-  socket.on('send-heart', () => {
-    console.log('send-heart')
-    countHeart = Utils.getContainer().state.countHeart
-    Utils.getContainer().setState({ countHeart: countHeart + 1 })
-  })
-}
-
-const emitSendHeart = roomName => {
+const emitRoomSendHeart = roomName => {
   socket.emit('send-heart', {
     roomName,
   })
+  console.tron.log('room-pre-send-heart')
 }
 
-const handleOnSendMessage = () => {
-  socket.on('send-message', data => {
+const handleOnRoomSendHeart = () => {
+  socket.on('room-post-send-heart', () => {
+    countHeart = Utils.getContainer('liveRoom').state.countHeart
+    Utils.getContainer('liveRoom').setState({ countHeart: countHeart + 1 })
+  })
+
+  console.tron.log('room-post-send-heart')
+}
+
+const emitRoomSendMessage = (roomName, userId, message, productId, productImageUrl, productUrl) => {
+  socket.emit('room-pre-send-message', {
+    roomName,
+    userId,
+    message,
+    productId,
+    productImageUrl,
+    productUrl,
+  })
+
+  console.tron.log('room-pre-send-message')
+}
+
+const handleOnRoomSendMessage = () => {
+  socket.on('room-post-send-message', data => {
     const { userId, message, productId, productImageUrl, productUrl } = data
-    listMessages = Utils.getContainer().state.listMessages
+    listMessages = Utils.getContainer('liveRoom').state.listMessages
     const newListMessages = listMessages.slice()
     newListMessages.push({
       userId,
@@ -129,24 +202,17 @@ const handleOnSendMessage = () => {
       productImageUrl,
       productUrl,
     })
-    Utils.getContainer().setState({ listMessages: newListMessages })
+    Utils.getContainer('liveRoom').setState({
+      listMessages: newListMessages,
+    })
   })
+
+  console.tron.log('room-post-send-message')
 }
 
-const emitSendMessage = (roomName, userId, message, productId, productImageUrl, productUrl) => {
-  socket.emit('send-message', {
-    roomName,
-    userId,
-    message,
-    productId,
-    productImageUrl,
-    productUrl,
-  })
-}
-
-const emitReplay = (roomName, userId) => {
+const emitRoomLiveReplay = (roomName, userId) => {
   socket.emit(
-    'replay',
+    'room-live-replay',
     {
       roomName,
       userId,
@@ -161,7 +227,7 @@ const emitReplay = (roomName, userId) => {
           const duration = end.diff(start)
           const timeout = setTimeout(() => {
             const { userId, message, productId, productImageUrl, productUrl } = messages[i]
-            listMessages = Utils.getContainer().state.listMessages
+            listMessages = Utils.getContainer('liveRoom').state.listMessages
             const newListMessages = listMessages.slice()
             newListMessages.push({
               userId,
@@ -170,19 +236,22 @@ const emitReplay = (roomName, userId) => {
               productImageUrl,
               productUrl,
             })
-            Utils.getContainer().setState({ listMessages: newListMessages })
+            Utils.getContainer('liveRoom').setState({
+              listMessages: newListMessages,
+            })
           }, duration)
           Utils.getTimeOutMessages().push(timeout)
         }
       }
     }
   )
+  console.tron.log('room-live-replay')
 }
 
-const handleOnChangedLiveStatus = () => {
-  socket.on('changed-live-status', data => {
+const handleOnRoomChangedLiveStatus = () => {
+  socket.on('room-changed-live-status', data => {
     const { roomName, userId, liveStatus } = data
-    const currentLiveStatus = Utils.getContainer().state.liveStatus
+    const currentLiveStatus = Utils.getContainer('liveRoom').state.liveStatus
     const currentRoomName = Utils.getRoomName()
     const currentUserType = Utils.getUserType()
 
@@ -196,7 +265,7 @@ const handleOnChangedLiveStatus = () => {
               text: 'Close',
               onPress: () => {
                 SocketUtils.emitLeaveServer(Utils.getRoomName(), Utils.getUserId())
-                Utils.getContainer().props.navigation.goBack()
+                Utils.getContainer('liveRoom').props.navigation.goBack()
               },
             },
           ])
@@ -205,41 +274,55 @@ const handleOnChangedLiveStatus = () => {
           Alert.alert('Alert', 'Streamer finish streaming')
         }
 
-        Utils.getContainer().setState({ liveStatus })
+        Utils.getContainer('liveRoom').setState({ liveStatus })
       } else if (currentUserType === 'REPLAY') {
         //
       }
     }
   })
+
+  console.tron.log('room-changed-live-status')
 }
 
-const handleOnNotReady = () => {
-  socket.on('not-ready', () => {
-    console.log('not-ready')
-    Utils.getContainer().alertStreamerNotReady()
-    // countViewer = Utils.getContainer().state.countViewer;
-    // Utils.getContainer().setState({ countViewer: countViewer + 1 });
+const handleOnRoomNotReady = () => {
+  socket.on('room-not-ready', () => {
+    Utils.getContainer('liveRoom').alertStreamerNotReady()
+    // countViewer = Utils.getContainer('liveRoom').state.countViewer;
+    // Utils.getContainer('liveRoom').setState({ countViewer: countViewer + 1 });
   })
+
+  console.tron.log('room-not-ready')
 }
 
 const SocketUtils = {
   getSocket,
   connect,
   handleOnConnect,
+  emitClientDisconnect,
+
+  emitLobbyJoin,
+  handleOnLobbyJoin,
+  emitLobbyLeave,
+  handleOnLobbyLeave,
+
   emitRegisterLiveStream,
   emitBeginLiveStream,
   emitFinishLiveStream,
-  handleOnClientJoin,
-  emitJoinServer,
   emitCancelLiveStream,
-  handleOnSendHeart,
-  emitSendHeart,
-  handleOnSendMessage,
-  emitSendMessage,
-  emitLeaveServer,
-  handleOnLeaveClient,
-  emitReplay,
-  handleOnChangedLiveStatus,
-  handleOnNotReady,
+
+  emitRoomJoin,
+  handleOnRoomJoin,
+  emitRoomLeave,
+  handleOnRoomLeave,
+
+  emitRoomSendHeart,
+  handleOnRoomSendHeart,
+
+  emitRoomSendMessage,
+  handleOnRoomSendMessage,
+
+  emitRoomLiveReplay,
+  handleOnRoomChangedLiveStatus,
+  handleOnRoomNotReady,
 }
 export default SocketUtils

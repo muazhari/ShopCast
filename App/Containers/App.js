@@ -9,12 +9,17 @@ import SocketUtils from '../Services/SocketUtils'
 
 SocketUtils.connect()
 SocketUtils.handleOnConnect()
-SocketUtils.handleOnClientJoin()
-SocketUtils.handleOnSendHeart()
-SocketUtils.handleOnSendMessage()
-SocketUtils.handleOnLeaveClient()
-SocketUtils.handleOnChangedLiveStatus()
-SocketUtils.handleOnNotReady()
+
+SocketUtils.handleOnLobbyJoin()
+SocketUtils.handleOnLobbyLeave()
+
+SocketUtils.handleOnRoomJoin()
+SocketUtils.handleOnRoomLeave()
+
+SocketUtils.handleOnRoomSendHeart()
+SocketUtils.handleOnRoomSendMessage()
+SocketUtils.handleOnRoomChangedLiveStatus()
+SocketUtils.handleOnRoomNotReady()
 
 // create our store
 const store = createStore()

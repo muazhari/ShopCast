@@ -120,7 +120,7 @@ class LoginScreen extends React.Component {
         <Modal
           animationIn="fadeInUp"
           animationOut="fadeOutDown"
-          isVisible={error}
+          isVisible={!!error}
           style={{
             backgroundColor: 'white',
             marginHorizontal: Metrics.screenWidth * 0.1,
